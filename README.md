@@ -15,10 +15,12 @@
 
 - create a directory
 - create server file `touch server.js`
+- create a `.gitignore` file
 - initialize a node project with `npm init -y`
 - install express and morgan `npm i express morgan`
 
 ### Add `node_modules` to `.gitignore`
+
 .gitignore
 ```bash
 node_modules
@@ -28,9 +30,11 @@ node_modules
 
 server.js
 ```js
-const morgan = require('morgan')
 const express = require('express')
+const morgan = require('morgan')
+
 const app = express()
+
 app.use(morgan('dev'))
 
 app.listen(3000, function(){
@@ -45,4 +49,26 @@ Navigate to `http://localhost:3000` to view our server.
 
 Use `ctrl + c` to stop the server in the terminal.
 
+### Creating a Test Route
+
+```js
+app.get('/test', function(req, res) {
+    res.send('this is a test ✨')
+})
+```
+<img width="330" height="145" alt="Screenshot 2026-07-05 at 12 30 29 PM" src="https://github.com/user-attachments/assets/5afaaa31-7117-4e82-99cf-79316aed6b9a" />
+
+Navigate to `http://localhost:3000/test`
+
+### Using request parameters
+
+```js
+app.get('/:userId', function(req, res){
+    res.send(`Hello user number:${req.params.userId}`)
+    console.log(req.params.userId)
+})
+```
+Navigate to `http://localhost:3000/2490`
+
+<img width="532" height="179" alt="Screenshot 2026-07-05 at 2 12 17 PM" src="https://github.com/user-attachments/assets/4a428ac3-5fdd-4917-ab90-38e9cd39fad3" />
 
