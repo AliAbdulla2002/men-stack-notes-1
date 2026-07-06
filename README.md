@@ -102,3 +102,41 @@ app.get('/', function(req, res){
 })
 ```
 <img width="632" height="311" alt="Screenshot 2026-07-06 at 12 39 56 PM" src="https://github.com/user-attachments/assets/be240674-1cf5-4b60-abe7-2c3799f72296" />
+
+### EJS Syntax
+
+To use javaScript in an ejs file, I need a scriplet tag:
+```ejs
+<% let user = 'nabila' %>
+```
+
+To display javaScript values from an ejs file, I need an output tag:
+```ejs
+<%= user %>
+```
+
+### Pass data from the controller
+
+Use the locals object inside the render method:
+```js
+res.render('home.ejs', {
+    title: 'Home Page',
+})
+```
+Now I can use the `title` variable in my `home.ejs` file.
+
+home.ejs
+```ejs
+<h1><%= title %></h1>
+```
+
+### Using `forEach` in `ejs`
+
+```ejs
+<ul>
+    <% inventory.forEach(function(item){ %>
+    <li><%= item.name %></li>
+    <% }) %>
+</ul>
+```
+
