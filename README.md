@@ -1,14 +1,16 @@
 # MEN STACK NOTES
 
-| CRUD Action | RESTful Action | HTTP Method | Definition |
-| ----------- | -------------- | ----------- | ------------------------ |
-|  | `new` | `GET` | Show a form to create a new item |
-| Create | `create` | `POST` | Add a new item to the database |
-| Read | `index` | `GET` | Show all items |
-| Read | `show` | `GET` | Show one specific item |
-| | `edit` | `GET` | Show a form to edit an existing item |
-| Update | `update` | `PUT` | Save changes to an existing item |
-| Delete | `delete` | `DELETE` | Remove an item from the database |
+## Example Fruits CRUD
+
+|HTTP<br>Method|URL<br>Endpoint|Purpose|
+|---|---|---|
+| GET | /fruits/new | View a form for submitting a fruit (be sure to define this route before the show route)|
+| POST | /fruits | Handle the new fruit form being submitted |
+| GET | /fruits | View all the fruits|
+| GET | /fruits/:fruitId |  View the details of any fruit |
+| DELETE | /fruits/:fruitId| Delete a fruit (restrict to user who submitted the fruit) |
+| GET | /fruits/:fruitId/edit | View a form for editing a fruit (restrict to user who submitted the fruit) |
+| PUT | /fruits/:fruitId|  Handle the edit fruit form being submitted (restrict to user who submitted the fruit) |
 
 
 ## SETUP
@@ -24,6 +26,7 @@
 .gitignore
 ```bash
 node_modules
+.env
 ```
 
 ### Write Server Boilerplate
