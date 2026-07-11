@@ -398,7 +398,9 @@ The route:
 4. Uses `Fruit.create()` to save the fruit.
 5. Redirects the user to the home page.
 
-#### Why We Convert the Checkbox
+<details><summary><strong>Why We Convert the Checkbox</strong></summary>
+
+
 
 A checked HTML checkbox sends the string:
 
@@ -423,6 +425,8 @@ if (req.body.isReadyToEat === 'on') {
     fruitData.isReadyToEat = false
 }
 ```
+
+</details>
 
 ### Check the Database
 
