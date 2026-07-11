@@ -1,30 +1,86 @@
 # MEN STACK NOTES
 
-| CRUD Action | RESTful Action | HTTP Method | Definition |
-| ----------- | -------------- | ----------- | ------------------------ |
-|  | `new` | `GET` | Show a form to create a new item |
-| Create | `create` | `POST` | Add a new item to the database |
-| Read | `index` | `GET` | Show all items |
-| Read | `show` | `GET` | Show one specific item |
-| | `edit` | `GET` | Show a form to edit an existing item |
-| Update | `update` | `PUT` | Save changes to an existing item |
-| Delete | `delete` | `DELETE` | Remove an item from the database |
+## Example Fruits CRUD
+
+|HTTP<br>Method|URL<br>Endpoint|Purpose|
+|---|---|---|
+| GET | /fruits/new | View a form for submitting a fruit (be sure to define this route before the show route)|
+| POST | /fruits | Handle the new fruit form being submitted |
+| GET | /fruits | View all the fruits|
+| GET | /fruits/:fruitId |  View the details of any fruit |
+| DELETE | /fruits/:fruitId| Delete a fruit (restrict to user who submitted the fruit) |
+| GET | /fruits/:fruitId/edit | View a form for editing a fruit (restrict to user who submitted the fruit) |
+| PUT | /fruits/:fruitId|  Handle the edit fruit form being submitted (restrict to user who submitted the fruit) |
+
+## The Create Request Cycle
+
+When the user creates a fruit, the request follows these steps:
+
+```plaintext
+GET /fruits/new
+        ↓
+Express renders new.ejs
+        ↓
+The user completes the form
+        ↓
+The form sends POST /fruits
+        ↓
+express.urlencoded() creates req.body
+        ↓
+The controller converts the checkbox value
+        ↓
+Fruit.create(req.body) saves the document
+        ↓
+Express redirects to /fruits/new
+```
+## Current Project Structure
+
+At this point, the application should will a structure like this:
+
+```plaintext
+men-stack-crud-app-fruits/
+├── models/
+│   └── fruit.js
+├── public/
+│   ├── images/
+│   └── stylesheets/
+│       └── style.css
+├── views/
+│   ├── partials/
+│   │   └── nav.ejs
+│   ├── new.ejs
+│   └── home.ejs
+├── .env
+├── .gitignore
+├── package-lock.json
+├── package.json
+└── server.js
+```
 
 
 ## SETUP
 
 - create a directory
-- create server file `touch server.js`
-- create a `.gitignore` file
+- create our first files `touch server.js .gitignore .env`
 - initialize a node project with `npm init -y`
-- install express and morgan `npm i express morgan`
+- install applications `npm i express morgan ejs mongoose dotenv`
+- open our project with `code .`
 
 ### Add `node_modules` to `.gitignore`
 
 .gitignore
 ```bash
 node_modules
+.env
 ```
+
+### Add the MongoDB connection string to `.env`:
+
+```plaintext
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/fruits?retryWrites=true&w=majority
+```
+_Remember to change your database name in the connection string_
+
 
 ### Write Server Boilerplate
 
@@ -32,9 +88,12 @@ server.js
 ```js
 const express = require('express')
 const morgan = require('morgan')
+const path = require('path')
 
 const app = express()
 
+app.use(express.static(path.join(__dirname, "public"))) // use static middleware with other middlware like morgan
+app.use(express.urlencoded({ extended: false })) // need this for reading form data
 app.use(morgan('dev'))
 
 app.listen(3000, function(){
@@ -74,7 +133,6 @@ Navigate to `http://localhost:3000/2490`
 
 ## Rendering EJS
 
-- install ejs with `npm i ejs`
 - create a `views` directory
 - create an `.ejs` file like `home.ejs`
 - add html boilerplate with `!`
@@ -182,15 +240,6 @@ Include the `nav` in other files with this statement:
 - Create a folder called `stylesheets` inside of `public`
 - Create a file called `style.css` inside of `stylesheets`
 
-Configure our server to look inside of the `public` folder for static files:
-```js
-// require the path from node at the top
-const path = require('path')
-
-// use static middleware with other middlware like morgan
-app.use(express.static(path.join(__dirname, "public")))
-```
-
 - Link the stylesheet in the head of our `html` files (inside `nav` partial if we're using partials)
 ```ejs
 <link rel="stylesheet" href="/stylesheets/style.css">
@@ -200,3 +249,202 @@ app.use(express.static(path.join(__dirname, "public")))
 
 - Create an `images` folder inside of our `public` folder
 - Link to images like normal: `<img src="/images/family.jpg" alt="A happy family">`
+
+## 🥭 Adding MongoDB and Mongoose
+
+### Connect to MongoDB
+
+At the top of `server.js`, load `dotenv` and Mongoose:
+
+```js
+const dotenv = require('dotenv').config()
+const mongoose = require('mongoose')
+```
+
+Connect to MongoDB _after_ `const app = express()`:
+
+```js
+const app = express()
+
+// connect to mongoDB
+mongoose.connect(process.env.MONGODB_URI)
+
+mongoose.connection.on('connected', () => {
+    console.log(`Connected to MongoDB ${mongoose.connection.name} 🥭`)
+})
+```
+<img width="553" height="96" alt="Screenshot 2026-07-11 at 10 12 22 AM" src="https://github.com/user-attachments/assets/92af3e8a-4d56-460a-ade8-7e76226cf139" />
+
+
+## Creating a Fruit in the Database
+
+### Create a Fruit model
+
+Create a `models` folder and a `fruit.js` file:
+
+```bash
+mkdir models
+touch models/fruit.js
+```
+
+Add the Fruit schema and model:
+
+```js
+const mongoose = require('mongoose')
+
+const fruitSchema = new mongoose.Schema({
+    name: String,
+    isReadyToEat: Boolean,
+})
+
+const Fruit = mongoose.model('Fruit', fruitSchema)
+
+module.exports = Fruit
+```
+
+Import the model into `server.js` _after_ your MongoDB Connection string:
+
+```js
+    console.log(`Connected to MongoDB ${mongoose.connection.name} 🥭`)
+})
+
+// import Fruit model here
+const Fruit = require('./models/fruit.js')
+```
+
+## Create the New Fruit Form
+
+Create `new.ejs` inside the `views` folder:
+
+```plaintext
+views/
+├── home.ejs
+└── new.ejs
+```
+
+Add the form:
+
+```ejs
+<h1>Add a Fruit</h1>
+
+<form action="/fruits" method="POST">
+    Fruit name:
+    <input type="text" name="name">
+
+    Ready to eat?
+    <input type="checkbox" name="isReadyToEat">
+
+    <button type="submit">Add Fruit</button>
+</form>
+```
+
+The input `name` values become keys inside `req.body`.
+
+For example:
+
+```js
+req.body.name
+req.body.isReadyToEat
+```
+
+### Display the New Fruit Form
+
+Create the `new` route:
+
+```js
+// GET /fruits/new
+app.get('/fruits/new', async (req, res) => {
+    res.render('new.ejs')
+})
+```
+
+Visit:
+
+```plaintext
+http://localhost:3000/fruits/new
+```
+
+The same form without and with CSS:
+
+<img width="300" height="260" alt="Screenshot 2026-07-11 at 10 42 44 AM" src="https://github.com/user-attachments/assets/287c4471-26f0-4f05-b7ef-a43b677bdf78" />
+<img width="304" height="260" alt="Screenshot 2026-07-11 at 10 39 33 AM" src="https://github.com/user-attachments/assets/fdd6558c-b038-4b47-a4d1-1d6e20969f96" />
+
+
+## Create a Fruit from the Form
+
+Create the `POST /fruits` route:
+
+```js
+// POST /fruits
+app.post('/fruits', async (req, res) => {
+    const fruitData = {}
+
+    fruitData.name = req.body.name
+
+    // Converts the 'on' into true for our isReadToEat boolean on our model
+    if (req.body.isReadyToEat === 'on') {
+        fruitData.isReadyToEat = true
+    } else {
+        fruitData.isReadyToEat = false
+    }
+
+    const createdFruit = await Fruit.create(fruitData)
+
+    res.redirect('/')
+})
+```
+
+The route:
+
+1. Receives the form data through `req.body`.
+2. Creates a new `fruitData` object.
+3. Converts the checkbox value into a boolean.
+4. Uses `Fruit.create()` to save the fruit.
+5. Redirects the user to the home page.
+
+<details><summary><strong>Why We Convert the Checkbox</strong></summary>
+
+
+
+A checked HTML checkbox sends the string:
+
+```js
+'on'
+```
+
+An unchecked checkbox does not send a value.
+
+Our schema (model) expects a boolean:
+
+```js
+isReadyToEat: Boolean
+```
+
+We convert the checkbox value before adding it to the database:
+
+```js
+if (req.body.isReadyToEat === 'on') {
+    fruitData.isReadyToEat = true
+} else {
+    fruitData.isReadyToEat = false
+}
+```
+
+</details>
+
+### Check the Database
+
+1. Open MongoDB Atlas.
+2. Select **Browse Collections**.
+3. Open the `fruits_db` database.
+4. Open the `fruits` collection.
+
+We should see a document similar to:
+<img width="1163" height="154" alt="Screenshot 2026-07-11 at 10 35 26 AM" src="https://github.com/user-attachments/assets/429b2d57-242c-4d03-8d42-322796449f51" />
+
+MongoDB automatically adds `_id` and `__v`.
+
+
+
+
+
