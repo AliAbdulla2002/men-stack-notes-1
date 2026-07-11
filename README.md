@@ -308,7 +308,7 @@ Import the model into `server.js`:
 const Fruit = require('./models/fruit.js')
 ```
 
-### Create the New Fruit Form
+## Create the New Fruit Form
 
 Create `new.ejs` inside the `views` folder:
 
@@ -343,7 +343,7 @@ req.body.name
 req.body.isReadyToEat
 ```
 
-## Display the New Fruit Form
+### Display the New Fruit Form
 
 Create the `new` route:
 
@@ -366,7 +366,7 @@ The same form without and with CSS:
 <img width="304" height="260" alt="Screenshot 2026-07-11 at 10 39 33 AM" src="https://github.com/user-attachments/assets/fdd6558c-b038-4b47-a4d1-1d6e20969f96" />
 
 
-### Create a Fruit from the Form
+## Create a Fruit from the Form
 
 Create the `POST /fruits` route:
 
