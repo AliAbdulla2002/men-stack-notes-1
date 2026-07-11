@@ -261,9 +261,12 @@ const dotenv = require('dotenv').config()
 const mongoose = require('mongoose')
 ```
 
-Connect to MongoDB:
+Connect to MongoDB _after_ `const app = express()`:
 
 ```js
+const app = express()
+
+// connect to mongoDB
 mongoose.connect(process.env.MONGODB_URI)
 
 mongoose.connection.on('connected', () => {
