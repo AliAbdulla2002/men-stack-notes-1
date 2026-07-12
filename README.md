@@ -443,8 +443,3 @@ We should see a document similar to:
 <img width="1163" height="154" alt="Screenshot 2026-07-11 at 10 35 26 AM" src="https://github.com/user-attachments/assets/429b2d57-242c-4d03-8d42-322796449f51" />
 
 MongoDB automatically adds `_id` and `__v`.
-
-
-
-
-
