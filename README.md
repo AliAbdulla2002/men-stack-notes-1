@@ -446,5 +446,3 @@ MongoDB automatically adds `_id` and `__v`.
 
 
 
-
-
